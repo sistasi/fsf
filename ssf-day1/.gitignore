@@ -1,0 +1,4 @@
+node_modules
+testng
+*.log
+*.tmp
