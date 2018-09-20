@@ -32,6 +32,7 @@ app.get('/random-image', (req, res)=> {
     //res.type('text/html');
     const myArray = fs.readdirSync('./images/');
     const randImg = myArray[Math.floor(Math.random() * myArray.length)];
+    res.type('image/jpg');
     res.sendFile(path.join(__dirname, 'images',randImg));
 });
 

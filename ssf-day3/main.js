@@ -8,6 +8,9 @@ var asciify = require('asciify-image');
 
 //Step 2: create instance of application
 const app = express();
+app.engine('hbs', exphbs());
+app.set('view engine','hbs');
+app.set('views','views')
 
 //Step 3: define routes
 const myArray = fs.readdirSync('./images/');
@@ -16,30 +19,35 @@ const randomImg = (array) =>{
  };
 
 app.get ('/image', (req, res) =>{
+    const randImg = randomImg(myArray);
     res.status(200);
     res.format({
         'text/html': () => {
-            res.send(`<img src='/${randomImg(myArray)}'>`);
+            //res.send(`<img src='/${randImg}'>`);
+            res.render('image',{image: randImg});
         },
-        'images/jpg': () => {
-            res.sendFile(path.join(__dirname, 'images',randomImg(myArray)));
+        'image/jpg': () => {
+            res.sendFile(path.join(__dirname, 'images',randImg));
         },
-        'images/png': () => {
-            res.sendFile(path.join(__dirname, 'images',randomImg(myArray)));
+        'image/png': () => {
+            res.sendFile(path.join(__dirname, 'images',randImg));
         },
         'application/json': () => {
-            res.json({image: path.join(__dirname, 'images',randomImg(myArray))});
+            res.json({imageUrl: `/${randImg}`});
         },
         'text/plain':()=>{
-            asciify(path.join(__dirname, 'images',randomImg(myArray)), function (err, asciified) {
-                // Print to console
-                //console.log(asciified);
+            var options = {fit:'box', width:10, height:10, color:true};
+            asciify(path.join(__dirname, 'images',randImg), options, function (err, asciified) {
+                if (err){
+                    res.status(400).send(JSON.stringify(err));
+                    return;
+                }
+                console.info(asciified);
                 res.send(asciified);
               });
         },
         default:()=>{
-            res.status(406);
-            res.end();
+            res.status(406).end();
         }    
     });
 });
