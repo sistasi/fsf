@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/scripts/css/bootstrap.min.css">
+    <script src="/scripts/js/bootstrap.min.js"></script>
+    <title>Welcome to ABC Mart!!</title>
+</head>
+
+<body>
+    <h1><code>Welcome to ABC Mart!</code></h1>
+    <form method="POST" action="/api/cart">
+        <table>
+            <tr>
+                <td>Username:</td>
+                <td><input type="text" name="name"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Item:</td>
+                <td><input type="text" name="content"></td>
+                <td>
+                    <button type="submit">Add</button>
+                </td>
+            </tr>
+        </table>
+        <form method="GET" action="/api/cart">
+            <table>
+                <tr>
+                    <td>Contents :</td>
+                    <td></td>
+                    <td><button type="submit">Load</button><button type="submit">Save</button></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <textarea aria-multiline="true" name="content">
+                        </textarea>
+                    </td>
+                </tr>
+            </table>
+        </form>
+</body>
+
+</html>

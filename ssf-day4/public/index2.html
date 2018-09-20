@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Welcome!</title>
+</head>
+<body>
+    <h1><code>Welcome</code></h1>
+    <p><a href="/uuid">UUID generator</a></p>
+
+    <h3>GET form</h3>
+    <form method="GET" action="/uuids">
+    <table>
+        <tr>
+            <td>Number of UUIDs</td>
+            <td><input type="number" name="uuidCount" min="1"></td>
+            <td>
+                <button type="submit">Generate</button>
+            </td>
+        </tr>
+    </table>
+    </form>
+
+    <h3>POST form</h3>
+    <form method="POST" action="/uuidV5">
+    <table>
+        <tr>
+            <td>Namespace</td>
+            <td><input type="text" name="namespace"></td>
+            <td>Number of UUIDs</td>
+            <td><input type="number" name="uuidCount" value="2"></td>
+            <td>
+                <button type="submit">Generate</button>
+            </td>
+        </tr>
+    </table>
+    </form>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<div class="alert alert-secondary">{{message}}</div>
+<h4>Add items</h4>
+<form method="POST" action="/api/cart2" class="form-group">
+    <table>
+        <tr>
+            <td>Username:</td>
+            <td><input type="text" name="name" class="form-control"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Item:</td>
+            <td><input type="text" name="content" class="form-control"></td>
+            <td>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </td>
+        </tr>
+    </table>
+</form>
+<h4>Retrieve items</h4>
+<form method="GET" action="/api/cart2">
+    <table>
+        <tr>
+            <td>Username:</td>
+            <td><input type="text" name="name" class="form-control"></td>
+            <td><button type="submit" class="btn btn-primary">Load</button></td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                {{#if content}}
+                Contents in {{name}}'s cart 
+                {{/if}}
+                </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <ol>
+                    {{#each content}}
+                    <li>{{this}}</li>
+                    {{/each}}
+                </ol>
+            </td>
+        </tr>
+    </table>
+</form>
