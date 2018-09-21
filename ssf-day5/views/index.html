@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Giphy Search</title>
+</head>
+
+<body>
+    <h1><code>Giphy Search</code></h1>
+    <form>
+        <table>
+            <tr>
+                <td>Type</td>
+                <td><select name="giphyType">
+                        <option value="gifs">GIF</option>
+                        <option value="stickers">Stickers</option>
+                    </select></td>
+            </tr>
+            <tr>
+                <td>Search terms</td>
+                <td><input type="text" name="keyword" value="{{keyword}}"></td>
+            </tr>
+            <tr>
+                <td>No of Result</td>
+                <td><select name="resultCount">
+                        {{#each resultDdList}}
+                        <option value="{{this}}">{{this}}</option>"
+                        {{/each}}
+                    </select></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button type="submit" formmethod="GET" formaction="/api/giphy">Search</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <h4>{{message}} {{#if data.data}} ({{data.data.length}} record(s)) {{/if}}</h4>
+    <table>
+        {{#grouped_each 5 data.data}}
+        <tr>
+            {{#each this}}
+            <td><img src="{{this.url}}" width="{{this.width}}" height="{{this.height}}"></td>
+            {{/each}}
+        </tr>
+        {{/grouped_each}}
+    </table>
+</body>
+
+</html>

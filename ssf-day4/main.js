@@ -13,8 +13,15 @@ app.set('views', 'views');
 
 const userCarts = {};
 
-//Step 3: define routes
+//Step 3: define 
 app.use('/scripts', express.static(__dirname + '/node_modules/bootstrap/dist/'));
+
+app.get('/form', (req, res) => {
+    res.status(200).type('text/html');
+    res.render('form', { layout: false });
+});
+
+
 //app.get('/', function (req, res) {
 //    res.render('index', { message: 'Welcome!' })
 //  });
@@ -81,34 +88,95 @@ const add = (name, items) => {
     }
     return cart;
 };
+app.post('/api/add', bodyParser.urlencoded(), (req, res) => {
+    const name = req.body.name;
+    const savedData = name in userCarts ? userCarts[name] : { name: name, content: [], saved: '' };
+    savedData.content.push(req.body.item);
+    savedData.saved = new Date().toString();
+    userCarts[name] = savedData;
+    res.status(200).type('text/html');
+    res.render('form', {
+        layout: false,
+        ...savedData
+    })
+});
 app.get('/api/cart',
     (req, res) => {
+        console.log('Req Content Type:', req.get('Content-Type'));
+        console.log('Req Accept:', req.get('Accept'));
         const name = req.query.name;
         if (!name) {
-            res.status(400).json({ error: 'Missing name' });
+            res.status(400);
+            res.format({
+                'text/html': () => {
+                    res.render('form', { message: 'Missing name', layout: false })
+                },
+                'application/json': () => {
+                    res.json({ error: 'Missing name' });
+                }
+            });
             return;
         }
         console.log("userCarts:", userCarts);
         if (name in userCarts) {
-            res.status(200).json(userCarts[name]);
+            res.status(200);
+            res.format({
+                'text/html': () => {
+                    res.render('form',
+                        {
+                            message: 'User ' + name + ' is found',
+                            name: name,
+                            content: userCarts[name].content
+                            , layout: false
+                        })
+                },
+                'application/json': () => {
+                    res.json(userCarts[name])
+                }
+            });
             return;
         }
         else {
-            res.status(404).json({ error: 'User ' + name + ' is not found.' });
+            res.status(404);
+            res.format({
+                'text/html': () => {
+                    res.render('form', { message: 'User ' + name + ' is not found.', layout: false })
+                },
+                'application/json': () => {
+                    res.json({ error: 'User ' + name + ' is not found.' });
+                }
+            });
         }
     });
 
 app.post('/api/cart', bodyParser.json(), bodyParser.urlencoded(),
     (req, res) => {
-        const tempCart = req.body;
-        if (!('name' in tempCart) || !('content' in tempCart) || tempCart.content.length<=0){
-            res.status(409).json({ error: 'Please enter name and content' });
+        let tempCart;
+        if (req.is('application/json')) {
+            tempCart = req.body;
+            if (!('name' in tempCart) || !('content' in tempCart) || tempCart.content.length <= 0) {
+                res.status(409);
+                res.json({ error: 'Please enter name and content' });
+                return;
+            }
+        }
+        else if (req.is('application/x-www-form-urlencoded')) {
+            tempCart = {
+                name: req.body.name,
+                content: JSON.parse(req.body.cart)
+            }
+            tempCart.content.push(req.body.item);
+            console.log('from cart:', tempCart);
+        }
+        else {
+            //return error
+            res.status(400).end();
             return;
         }
         const name = tempCart.name;
         var content = tempCart.content + "";
         var items = content.split(',');
-        
+
         //use spread to assign
         //db[cart.name]= { 
         //  ...cart, //spread operator, doing the 2 lines below
@@ -118,7 +186,19 @@ app.post('/api/cart', bodyParser.json(), bodyParser.urlencoded(),
         //}
 
         var cart = add(name, items);
-        res.status(201).json(cart);
+        res.status(201);
+        res.format({
+            'application/json': () => {
+                res.json(cart);
+            },
+            'text/html': () => {
+                res.render('form', {
+                    message: 'Item is successfully added',
+                    name: name,
+                    cart: cart.content
+                })
+            }
+        })
     });
 app.use(express.static(path.join(__dirname, 'angular')));
 

@@ -1,5 +1,11 @@
 <div class="alert alert-secondary">{{message}}</div>
 <h4>Add items</h4>
+<form class="form-group">
+    <input type="text" name="name" class="form-control">
+    <button class="btn btn-primary" type="submit" formaction="/api/load">Load</button><br/>
+    <input type="text" name="content" class="form-control">
+    <button class="btn btn-primary" type="submit" formaction="/api/add">Add</button><br/>
+</form>
 <form method="POST" action="/api/cart2" class="form-group">
     <table>
         <tr>
@@ -27,9 +33,9 @@
         <tr>
             <td colspan="3">
                 {{#if content}}
-                Contents in {{name}}'s cart 
+                Contents in {{name}}'s cart
                 {{/if}}
-                </td>
+            </td>
         </tr>
         <tr>
             <td colspan="3">
