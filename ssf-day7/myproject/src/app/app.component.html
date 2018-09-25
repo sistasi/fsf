@@ -1,0 +1,29 @@
+<div class="container">
+  <h2>{{title}}</h2>
+
+  <mat-form-field>
+    <mat-select placeholder="selectionType" [(ngModel)]="searchCriteria.selectionType">
+      <mat-option *ngFor="let select of selections" [value]="select.value">{{select.viewValue}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <br />
+  <mat-form-field class="example-full-width">
+    <input matInput [(ngModel)]="searchCriteria.keyword" placeholder="keyword">
+  </mat-form-field>
+  <br />
+  <mat-form-field>
+      <mat-select placeholder="limit" [(ngModel)]="searchCriteria.limit">
+        <mat-option *ngFor="let rec of recordsPerPage" [value]="rec">{{rec}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  <button mat-raised-button color="primary" (click)="search()">Search</button>
+  <div>
+    <p>{{message}}</p>
+    <ul *ngFor="let film of films">
+      <li>
+        {{film.title}}<br/>
+        {{film.description}}
+      </li>
+    </ul>
+  </div>
+</div>

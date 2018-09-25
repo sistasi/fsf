@@ -2,14 +2,28 @@
 require('dotenv').config();
 const express=require("express"),
 mysql = require ("mysql"),
-bodyParser = require ("body-parser"),
-q = require("q");
+cors = require('cors'),
+bodyParser = require ("body-parser");
 
 const app = express();
 
+var whitelist = ['http://localhost:4200']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+        console.log("origin:", origin)
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+app.use(cors());
+const API_URI = "/api";
 const queryFilm = "select * from film limit ? offset ?";
 const queryFilmById = "select * from film where film_id=?";
 const queryFilmByIdWithLimitOffset = "select * from film where film_id=? limit ? offset ?";
+const queryFilmWithBothParam = "select * from film where (title like ?) || (description like ?) limit ? offset ?";
 const queryBookById = "select * from books where id=?";
 
 //DB_HOST ="localhost"
@@ -29,30 +43,6 @@ var pool = mysql.createPool({
 });
 
 console.log("DB User:", process.env.DB_USER);
-
-var makeQuery = (sql,pool)=>{
-    console.log("SQL is:", sql);
-    return (args)=>{
-        var defer = q.defer();
-        pool.getConnection((err, conn)=>{ //this is async that's why need to be put function within function
-            if(err){
-                defer.reject(err);
-                return;
-            }
-            conn.query(sql, args||[], (err, results)=>{
-                conn.release();
-                if (err){
-                    defer.reject(err);
-                    return;
-                }
-                defer.resolve(results);
-                
-            })
-        });
-        return defer.promise;
-    }
-};
-
 
 var makeQueryWithPromise = (sql,pool)=>{
     console.log("SQL is:", sql);
@@ -80,19 +70,44 @@ var makeQueryWithPromise = (sql,pool)=>{
 };
 
 var findAllFilms = makeQueryWithPromise(queryFilm, pool);
-var findFilmById = makeQuery(queryFilmById, pool);
-var findBookById = makeQuery(queryBookById, pool);
-var findFilmByIdWithLimitOffset = makeQuery(queryFilmByIdWithLimitOffset, pool)
+var findFilmsByBothParam = makeQueryWithPromise(queryFilmWithBothParam, pool);
+var findFilmById = makeQueryWithPromise(queryFilmById, pool);
+var findBookById = makeQueryWithPromise(queryBookById, pool);
+var findFilmByIdWithLimitOffset = makeQueryWithPromise(queryFilmByIdWithLimitOffset, pool)
 //router
+app.use(express.static(__dirname+"/../dist/myproject"));
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(bodyParser.json());
 
-app.get('/films', (req, res) => {
+app.get(API_URI + '/films', (req, res) => {
+    console.log(">>Query param: ", req.query);
     const filmId = req.query.filmId;
     const limit = parseInt(req.query.limit) || 1;
     const offset = parseInt(req.query.offset) || 1;
-    if (typeof(filmId) === 'undefined'){
+    const keyword = req.query.keyword;
+    const selectionType = req.query.selectionType;
+    if (typeof(filmId) !== 'undefined' && filmId != ''){
+        console.log("findFilmByIdWithLimitOffset");
+        findFilmByIdWithLimitOffset([filmId, limit, offset]).then((results)=>{
+            res.json(results);
+        }).catch((error)=>{
+            res.status(500).json(error);
+        });
+    }
+    else if  (typeof(selectionType) !== 'undefined'){
+        console.log("findFilmsByBothParam");
+        findFilmsByBothParam([selectionType=='title'||selectionType=='both'?'%'+keyword+'%':'', 
+        selectionType=='description'||selectionType=='both'?'%'+keyword+'%':'', limit, offset])
+        .then((results)=>{
+            res.json(results);
+        }).catch((error)=>{
+            console.log("Error in finding films:",error);
+            res.status(500).json(error);
+        });
+    }
+    else {
+        console.log("findAllFilms");
         findAllFilms([limit, offset]).then((results)=>{
             res.json(results);
         }).catch((error)=>{
@@ -100,17 +115,10 @@ app.get('/films', (req, res) => {
             res.status(500).json(error);
         });
     }
-    else{
-        findFilmByIdWithLimitOffset([filmId, limit, offset]).then((results)=>{
-            res.json(results);
-        }).catch((error)=>{
-            res.status(500).json(error);
-        });
-    }
     
 });
 
-app.get('/films/:filmId', (req, res)=>{
+app.get(API_URI + '/films/:filmId', (req, res)=>{
     let filmId = req.params.filmId;
     console.log(filmId);
     findFilmById([filmId]).then((results)=>{
@@ -120,7 +128,7 @@ app.get('/films/:filmId', (req, res)=>{
     });
 });
 
-app.get('/books/:bookId', (req, res)=>{
+app.get(API_URI + '/books/:bookId', (req, res)=>{
     let bookId = req.params.bookId;
     console.log(bookId);
     findBookById([bookId]).then((results)=>{
@@ -130,7 +138,7 @@ app.get('/books/:bookId', (req, res)=>{
     });
 });
 
-app.get('/books', (req, res)=>{
+app.get(API_URI + '/books', (req, res)=>{
     let bookId = req.query.bookId;
     console.log(bookId);
     findBookById([bookId]).then((results)=>{
