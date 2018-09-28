@@ -32,3 +32,5 @@ To get the no of records from the search criteria.
 Same parameters can be used from the search above. 
 * `api/search/:id`
 To search the book by book id. 
+* `api/update`
+To update the cover_thumbnail field when performing upload from UI.
