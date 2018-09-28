@@ -1,0 +1,79 @@
+<div style="text-align:center">
+  <mat-form-field  style="width:200px !important">
+    <mat-select placeholder="selectionType" [(ngModel)]="criteria.selectionType" required>
+      <mat-option *ngFor="let select of selections" [value]="select.value">{{select.viewValue}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="example-full-width">
+    <input matInput [(ngModel)]="criteria.keyword" placeholder="keyword" (keyup)="filter($event.target.value)" required>
+  </mat-form-field>
+  <button class="btn btn-primary" (click)="search()">Search</button>
+  <button class="btn btn-primary" (click)="clear()">Clear</button>
+  <button class="btn btn-success" (click)="add()">Add</button>
+</div>
+
+<div class="example-container mat-elevation-z8">
+  <mat-table [dataSource]="productDs" matSort (matSortChange)="sortData($event)">
+    <!-- ID Column -->
+    <ng-container matColumnDef="id">
+      <mat-header-cell fxFlex="10%" *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
+      <mat-cell fxFlex="10%" *matCellDef="let row">
+        <!--<img src="http://www.barcodes4.me/barcode/c128a/{{row.upc12}}.png?IsTextDrawn=1">-->
+        {{row.id}}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="upc12">
+        <mat-header-cell fxFlex="20%" *matHeaderCellDef mat-sort-header> Barcode </mat-header-cell>
+        <mat-cell fxFlex="20%" *matCellDef="let row">
+          <img src="http://www.barcodes4.me/barcode/c128a/{{row.upc12}}.png?IsTextDrawn=1">
+        </mat-cell>
+      </ng-container>
+    <ng-container matColumnDef="name">
+      <mat-header-cell fxFlex="30%" *matHeaderCellDef mat-sort-header> Product Name </mat-header-cell>
+      <mat-cell fxFlex="30%" *matCellDef="let row"> <a (click)="view(row.id)">{{row.name}}</a>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="brand">
+      <mat-header-cell fxFlex="10%" *matHeaderCellDef mat-sort-header> Brand </mat-header-cell>
+      <mat-cell fxFlex="10%" *matCellDef="let row"> <a (click)="view(row.id)">{{row.brand}}</a>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="edit">
+      <mat-header-cell fxFlex="10%" *matHeaderCellDef> View/Edit </mat-header-cell>
+      <mat-cell fxFlex="10%" *matCellDef="let row">
+          <button class="btn btn-primary" (click)="view(row.id)">View</button> 
+        <button class="btn btn-primary" (click)="edit(row)">Edit</button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayCols"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayCols;"></mat-row>
+  </mat-table>
+  <mat-paginator [pageSize]="interval" [pageSizeOptions]="recordsPerPage" (page)="pageEvent = list($event)"></mat-paginator>
+
+  <!-- SHOW 1 FILM-->
+  <mat-card class="col-md-12" *ngIf="oneProduct.id">
+    <mat-card-title>{{oneProduct.id}} - {{oneProduct.name}}</mat-card-title>
+    <mat-card-content>
+      <table>
+        <tr>
+          <th>Name:</th>
+          <th>{{oneProduct.name}}</th>
+        </tr>
+        <tr>
+          <td>Brand:</td>
+          <td>{{oneProduct.brand}}</td>
+        </tr>
+        <tr>
+          <td>Barcode:</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <img src="http://www.barcodes4.me/barcode/c128a/{{oneProduct.upc12}}.png?IsTextDrawn=1">
+          </td>
+        </tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

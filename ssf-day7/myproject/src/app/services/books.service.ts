@@ -25,5 +25,5 @@ export class BooksService {
       console.error(`${operation} failed: ${error.message}`);
       return of(result as T);
     };
-  }s
+  }
 }

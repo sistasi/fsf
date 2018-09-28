@@ -1,0 +1,36 @@
+<div class="alert alert-{{message.class}}" role="alert" *ngIf="message.msg">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  {{message.msg}}
+</div>
+
+<h4>Add a product</h4>
+<br />
+<table>
+  <tr>
+    <td>
+      <mat-form-field class="example-full-width" style="width:500px !important">
+        <input matInput [(ngModel)]="product.name" placeholder="Name">
+      </mat-form-field>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <mat-form-field class="example-full-width">
+        <input matInput [(ngModel)]="product.brand" placeholder="Brand">
+      </mat-form-field>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <mat-form-field class="example-full-width">
+        <input matInput [(ngModel)]="product.upc12" type="number" placeholder="UPC12" >
+      </mat-form-field>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <button class="btn btn-primary" (click)="save()">Save</button>
+      <button class="btn btn-danger" (click)="cancel()">Cancel</button>
+    </td>
+  </tr>
+</table>

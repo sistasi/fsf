@@ -3,8 +3,22 @@ require('dotenv').config();
 const express=require("express"),
 mysql = require ("mysql"),
 cors = require('cors'),
-bodyParser = require ("body-parser");
+bodyParser = require ("body-parser"),
+multer = require('multer');
 
+var storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, 'uploads/')
+    },
+    filename: function(req, file, cb){
+        let fn = file.originalname.split(".");
+        let ext = fn[fn.length-1];
+        console.log("File:", JSON.stringify(file),",Filename:", fn[0] + '-' + Date.now() +"." + ext);
+        cb(null, fn[0] + '-' + Date.now() +"." + ext);
+    }
+});
+var upload = multer({storage: storage});
+//var upload = multer({dest:'uploads/'});
 const app = express();
 
 var whitelist = ['http://localhost:4200']
@@ -20,6 +34,24 @@ var corsOptions = {
 }
 app.use(cors());
 const API_URI = "/api";
+/******************* FILE UPLOAD ******************/
+//avatar = the name of the file in front-end
+app.post(API_URI + "/upload", upload.single('avatar'), (req, res, next)=>{
+    res.status(200).json({});
+});
+
+app.get(API_URI + "/get-weather", (req, res)=>{
+    let countryCode = req.query.countryCode;
+    findCityOnWeatherTable([countryCode]).then((results)=>{
+        console.log(results);
+        let city = "London";
+        let OPENWEATHER_API_URL=`https://api.openweathermap.org/data/2.5/weather?q=${city}`;
+        request.get(OPENWEATHER_API_URL)
+        .on('response')
+    })
+    
+});
+/************************ CONNECTION TO DB **************/
 const queryFilm = "select * from film limit ? offset ?";
 const queryFilmById = "select * from film where film_id=?";
 const queryFilmByIdWithLimitOffset = "select * from film where film_id=? limit ? offset ?";
@@ -80,11 +112,27 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(bodyParser.json());
 
+//web filter
+function logging (req, res, next){
+    console.log("logging ");
+    next();
+}
+
+function auth(req, res, next){
+    console.log("auth ");
+    next();
+}
+
+app.get(API_URI + "/films1",auth, logging, (req, res, next)=>{
+    res.json({});
+});
+
+
 app.get(API_URI + '/films', (req, res) => {
     console.log(">>Query param: ", req.query);
     const filmId = req.query.filmId;
     const limit = parseInt(req.query.limit) || 1;
-    const offset = parseInt(req.query.offset) || 1;
+    const offset = parseInt(req.query.offset);
     const keyword = req.query.keyword;
     const selectionType = req.query.selectionType;
     if (typeof(filmId) !== 'undefined' && filmId != ''){

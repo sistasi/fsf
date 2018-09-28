@@ -1,0 +1,34 @@
+<!-- SHOW 1 RECORD-->
+<mat-card class="col-md-12" *ngIf="myBook.id">
+  <mat-card-title>{{myBook.id}} - {{myBook.title}}</mat-card-title>
+  <mat-card-content>
+    <img src="/thumbnails/{{myBook.cover_thumbnail}}" style="max-width:300px;">
+    <br />
+    <div *ngIf="myBook.cover_thumbnail=='no_book_cover.jpg'">
+      <input type='file' #file (change)="onSelectFile($event)">
+      <div class="alert alert-{{msgAlert.class}}" role="alert" *ngIf="msgAlert.msg">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          {{msgAlert.msg}}
+        </div>
+    </div>
+    <table>
+      <tr>
+        <th>Title:</th>
+        <th>{{myBook.title}}</th>
+      </tr>
+      <tr>
+        <td>Author:</td>
+        <td>{{myBook.author_firstname}} {{myBook.author_lastname}}</td>
+      </tr>
+      <tr>
+        <td>Created Date:</td>
+        <td>{{myBook.created_date | date:'dd MMM yyyy'}}</td>
+      </tr>
+      <tr>
+        <td>Modified Date:</td>
+        <td>{{myBook.modified_date | date:'dd MMM yyyy'}}</td>
+      </tr>
+    </table>
+  </mat-card-content>
+</mat-card>
+<button class="btn btn-primary" (click)="close()" *ngIf="myBook.id">Close</button>

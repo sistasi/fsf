@@ -1,0 +1,61 @@
+<div style="text-align:center">
+  <mat-form-field style="width:200px !important">
+    <mat-select placeholder="selectionType" [(ngModel)]="criteria.selectionType" required>
+      <mat-option *ngFor="let select of selections" [value]="select.value">{{select.viewValue}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="example-full-width">
+    <input matInput [(ngModel)]="criteria.keyword" placeholder="keyword" required>
+  </mat-form-field>
+  <button class="btn btn-primary" (click)="search()">Search</button>
+  <button class="btn btn-primary" (click)="clear()">Clear</button>
+</div>
+<div class="alert alert-{{message.class}}" role="alert" *ngIf="message.msg">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  {{message.msg}}
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+      <mat-table [dataSource]="bookDs" matSort (matSortChange)="sortData($event)">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <mat-header-cell fxFlex="10%" *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
+          <mat-cell fxFlex="10%" *matCellDef="let row">
+            {{row.id}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="cover_thumbnail">
+          <mat-header-cell fxFlex="20%" *matHeaderCellDef mat-sort-header> Thumbnail </mat-header-cell>
+          <mat-cell fxFlex="20%" *matCellDef="let row"><img src="/thumbnails/{{row.cover_thumbnail}}" width="100">
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="title">
+          <mat-header-cell fxFlex="40%" *matHeaderCellDef mat-sort-header> Title </mat-header-cell>
+          <mat-cell fxFlex="40%" *matCellDef="let row" (click)="view(row.id)"><u class="cursor:hand!important">{{row.title}}</u>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="author_firstname">
+          <mat-header-cell fxFlex="15%" *matHeaderCellDef mat-sort-header> Author First Name </mat-header-cell>
+          <mat-cell fxFlex="15%" *matCellDef="let row"> {{row.author_firstname}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="author_lastname">
+          <mat-header-cell fxFlex="15%" *matHeaderCellDef mat-sort-header> Author Last Name </mat-header-cell>
+          <mat-cell fxFlex="15%" *matCellDef="let row"> {{row.author_lastname}}
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayCols"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayCols;"></mat-row>
+      </mat-table>
+      <mat-paginator [pageSize]="interval" [pageSizeOptions]="recordsPerPage" (page)="pageEvent = list($event)"></mat-paginator>
+
+    </div>
+    <div class="col-md-4">
+
+      <app-book-detail [myBook]="oneBook" (refreshList)="list($event)"></app-book-detail>
+    </div>
+  </div>
+
+</div>

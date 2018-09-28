@@ -1,0 +1,105 @@
+<div class="container">
+  <h2>Search films</h2>
+  <table>
+    <tr>
+      <td>
+        <mat-form-field>
+          <mat-select placeholder="selectionType" [(ngModel)]="searchCriteria.selectionType">
+            <mat-option *ngFor="let select of selections" [value]="select.value">{{select.viewValue}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </td>
+
+      <td>
+        <mat-form-field class="example-full-width">
+          <input matInput [(ngModel)]="searchCriteria.keyword" placeholder="keyword" (keyup)="filter($event.target.value)">
+        </mat-form-field>
+      </td>
+
+      <td>
+        <button mat-raised-button color="primary" (click)="searchKeyword()">Search</button>
+        <button mat-raised-button color="primary" (click)="clear()">Clear</button>
+      </td>
+    </tr>
+
+  </table>
+  <div>{{message}}</div>
+  <!--
+    <mat-form-field class="example-full-width">
+        <input type="text" matInput placeholder="filter" (keyup)="filter($event.target.value)">
+      </mat-form-field>-->
+  <!-- SHOW TABLE OF FILMS -->
+  <div class="example-container mat-elevation-z8">
+    <mat-table [dataSource]="filmDs" matSort fxFlex="40%">
+      <!-- ID Column -->
+      <ng-container matColumnDef="film_id">
+        <mat-header-cell fxFlex="10%" *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
+        <mat-cell fxFlex="30%" *matCellDef="let row"> <a href="#" (click)="view(row.film_id)">{{row.film_id}}</a>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="title">
+        <mat-header-cell fxFlex="20%" *matHeaderCellDef mat-sort-header> Title </mat-header-cell>
+        <mat-cell fxFlex="70%" *matCellDef="let row"> <a href="#" (click)="view(row.film_id)">{{row.title}}</a>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayCols"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayCols;"></mat-row>
+    </mat-table>
+    <mat-paginator [pageSize]="initRecords" [pageSizeOptions]="recordsPerPage" (page)="pageEvent = search($event)"></mat-paginator>
+    
+    <!-- SHOW 1 FILM-->
+    <mat-card class="col-md-12" *ngIf="oneFilm.film_id">
+      <mat-card-title>{{oneFilm.film_id}} - {{oneFilm.title}}</mat-card-title>
+      <mat-card-content>
+        <table>
+          <tr>
+            <th>Title:</th>
+            <th>{{oneFilm.title}}</th>
+          </tr>
+          <tr>
+            <td>Description:</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="2" class="redbox">
+              {{oneFilm.description}}
+            </td>
+          </tr>
+          <tr>
+            <td>Release Year:</td>
+            <td>{{oneFilm.release_year}}</td>
+          </tr>
+          <tr>
+            <td>Rental Duration:</td>
+            <td>{{oneFilm.rental_duration}}</td>
+          </tr>
+          <tr>
+            <td>Rental Rate:</td>
+            <td>{{oneFilm.rental_rate}}</td>
+          </tr>
+          <tr>
+            <td>Length:</td>
+            <td>{{oneFilm.length}}</td>
+          </tr>
+          <tr>
+            <td>Replacement Cost:</td>
+            <td>{{oneFilm.replacement_cost}}</td>
+          </tr>
+          <tr>
+            <td>Rating:</td>
+            <td>{{oneFilm.rating}}</td>
+          </tr>
+          <tr>
+            <td>Special Features:</td>
+            <td>{{oneFilm.special_features}}</td>
+          </tr>
+          <tr>
+            <td>Last Update:</td>
+            <td>{{oneFilm.last_update}}</td>
+          </tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

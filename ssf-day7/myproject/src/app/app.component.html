@@ -1,22 +1,30 @@
 <div class="container">
   <h2>{{title}}</h2>
-
-  <mat-form-field>
-    <mat-select placeholder="selectionType" [(ngModel)]="searchCriteria.selectionType">
-      <mat-option *ngFor="let select of selections" [value]="select.value">{{select.viewValue}}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <br />
-  <mat-form-field class="example-full-width">
-    <input matInput [(ngModel)]="searchCriteria.keyword" placeholder="keyword">
-  </mat-form-field>
-  <br />
-  <mat-form-field>
-      <mat-select placeholder="limit" [(ngModel)]="searchCriteria.limit">
-        <mat-option *ngFor="let rec of recordsPerPage" [value]="rec">{{rec}}</mat-option>
+<table>
+  <tr>
+    <td> 
+      <mat-form-field>
+      <mat-select placeholder="selectionType" [(ngModel)]="searchCriteria.selectionType">
+        <mat-option *ngFor="let select of selections" [value]="select.value">{{select.viewValue}}</mat-option>
       </mat-select>
     </mat-form-field>
-  <button mat-raised-button color="primary" (click)="search()">Search</button>
+  </td>
+  </tr>
+  <tr>
+    <td>
+        <mat-form-field class="example-full-width">
+            <input matInput [(ngModel)]="searchCriteria.keyword" placeholder="keyword"  (keyup)="filter($event.target.value)">
+          </mat-form-field>
+    </td>
+  </tr>
+<tr>
+  <td>
+      <button mat-raised-button color="primary" (click)="search()">Search</button>
+      <button mat-raised-button color="primary" (click)="clear()">Clear</button>
+  </td>
+</tr>
+
+</table>
   <div>
     <p>{{message}}</p>
     <ul *ngFor="let film of films">
@@ -26,4 +34,35 @@
       </li>
     </ul>
   </div>
+  <!--
+  <mat-form-field class="example-full-width">
+      <input type="text" matInput placeholder="filter" (keyup)="filter($event.target.value)">
+    </mat-form-field>-->
+  <div  class="example-container mat-elevation-z8">
+  <mat-table [dataSource]="filmDs" matSort>
+     <!-- ID Column -->
+     <ng-container matColumnDef="film_id">
+      <mat-header-cell  fxFlex="10%" *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
+      <mat-cell  fxFlex="10%" *matCellDef="let row"> {{row.film_id}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="title">
+      <mat-header-cell fxFlex="20%" *matHeaderCellDef mat-sort-header> Title </mat-header-cell>
+      <mat-cell fxFlex="20%" *matCellDef="let row"> {{row.title}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="description">
+      <mat-header-cell fxFlex="60%" *matHeaderCellDef mat-sort-header> Description </mat-header-cell>
+      <mat-cell fxFlex="60%" *matCellDef="let row"> {{row.description}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="release_year">
+      <mat-header-cell fxFlex="10%" *matHeaderCellDef mat-sort-header> Release Year </mat-header-cell>
+      <mat-cell fxFlex="10%" *matCellDef="let row"> {{row.release_year}} </mat-cell>
+    </ng-container>
+    
+    <mat-header-row *matHeaderRowDef="displayCols"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayCols;"></mat-row>
+  </mat-table>
+  
+  <mat-paginator [pageSize]="initRecords" [pageSizeOptions]="recordsPerPage"  (page)="pageEvent = search($event)" ></mat-paginator>
+
+</div>
 </div>
